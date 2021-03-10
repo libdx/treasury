@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: ['/usr/src/app/entrypoint.sh']
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8002:8000
+    environment:
+      DJANGO_DEVELOPMENT: "true"
+    depends_on:
+      - web-db
+
+  web-db:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    expose:
+      - 5432

@@ -1,0 +1,12 @@
+.dockerignore
+Dockerfile
+Dockerfile.prod
+*.swp
+__pycache__
+htmlcov
+node_modules
+.env
+.venv
+.coverage
+.idea
+*.sqlite3
