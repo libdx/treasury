@@ -44,7 +44,7 @@ lint:
 
 fix:
 	docker-compose exec $(APP) sh -c \
-		"black $(PROJECT) && isort $(PROJECT)
+		"black $(PROJECT) && isort $(PROJECT)"
 
 fix-ownership:
 	sudo chown -R $USER:$USER $(PROJECT)
