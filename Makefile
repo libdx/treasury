@@ -1,6 +1,6 @@
 APP = web
 PROJECT = project
-TESTS = tests
+TESTS = $(PROJECT)/tests
 
 .PHONY: clean
 
@@ -33,7 +33,7 @@ shell:
 
 test:
 	docker-compose exec $(APP) \
-		pytest $(TESTS) -p no:warnings
+		pytest $(TESTS) -p no:warnings $(FLAGS)
 
 cov:
 	docker-compose exec $(APP) \
