@@ -9,7 +9,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from project.apps.api.models import Attempt
+from project.apps.api.models import Attempt, Treasure
 from project.apps.api.serializers import AttemptSerializer, UserSerializer
 
 
@@ -30,12 +30,24 @@ class RegisterUserViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 register_user = RegisterUserViewSet.as_view({"post": "create"})
 
 
-class TreasureHuntViewSet(
-    mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
-):
+class TreasureHuntViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     permission_classes = [AllowAny]
     queryset = Attempt.objects.all()
     serializer_class = AttemptSerializer
+
+    def create(self, request):
+        serializer = AttemptSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(
+                status=400,
+                data={"status": "error", "distance": -1, "error": serializer.errors},
+            )
+
+        attempt = serializer.save()
+        treasure = Treasure.objects.first()
+        distance = attempt.distance_to(treasure)
+
+        return Response(status=201, data={"status": "ok", "distance": distance})
 
 
 class AttemptViewSet(viewsets.ReadOnlyModelViewSet):

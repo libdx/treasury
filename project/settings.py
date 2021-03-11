@@ -139,3 +139,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
+
+# Default minimal distance in meters required to be close enough to treasure to find it.
+DEFAULT_TREASURE_HUNT_RADIUS = 5.0
