@@ -31,11 +31,15 @@ migrate:
 shell:
 	docker-compose exec $(APP) python manage.py shell
 
+install:
+	docker-compose exec $(APP) sh -c \
+		"pip install -r requirements.txt && pip install -r requirements-dev.txt"
+
 test:
 	docker-compose exec $(APP) \
 		pytest $(TESTS) -p no:warnings $(FLAGS)
 
-cov:
+coverage:
 	docker-compose exec $(APP) \
 		pytest $(TESTS) -p no:warnings --cov=$(PROJECT)
 
