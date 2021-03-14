@@ -10,7 +10,10 @@ clean:
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
-run-dev:
+up:
+	docker-compose up --detach
+
+up-build:
 	docker-compose up --build --detach
 
 logs:
