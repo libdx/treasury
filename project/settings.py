@@ -21,10 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "u-p*y$5p@7sh6z&bbg+dmbhlg!^_0evzj(k9jw3sk_@_58tb(r"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.getenv("DJANGO_DEVELOPMENT") is not None:
+    DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -142,3 +143,13 @@ STATIC_URL = "/static/"
 
 # Default minimal distance in meters required to be close enough to treasure to find it.
 DEFAULT_TREASURE_HUNT_RADIUS = 5.0
+
+# AWS
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_SES_REGION = os.getenv("AWS_SES_REGION")
+AWS_SES_EMAIL_SOURCE = os.getenv("AWS_SES_EMAIL_SOURCE")
+
+# Celery
+CELERY_RESULT_BACKEND = "rpc://"
+CELERY_BROKER_URL = "pyamqp://rabbitmq:rabbitmq@broker//"

@@ -13,8 +13,29 @@ services:
       - 8002:8000
     environment:
       DJANGO_DEVELOPMENT: "true"
+      SECRET_KEY: ${SECRET_KEY}
     depends_on:
       - web-db
+      - broker
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A project worker -l INFO
+    volumes:
+      - .:/usr/src/app
+    environment:
+      DJANGO_DEVELOPMENT: "true"
+      DJANGO_SETTINGS_MODULE: "project.settings"
+      SECRET_KEY: ${SECRET_KEY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_SES_REGION: ${AWS_SES_REGION}
+      AWS_SES_EMAIL_SOURCE: ${AWS_SES_EMAIL_SOURCE}
+    depends_on:
+      - web-db
+      - broker
 
   web-db:
     image: postgres:12-alpine
@@ -24,3 +45,11 @@ services:
       POSTGRES_DB: postgres
     expose:
       - 5432
+
+  broker:
+    image: rabbitmq:3.8-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    expose:
+      - 5672
