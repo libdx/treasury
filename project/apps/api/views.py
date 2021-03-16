@@ -43,9 +43,18 @@ class TreasureHuntViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
                 data={"status": "error", "distance": -1, "error": serializer.errors},
             )
 
-        attempt = serializer.save()
-        treasure = Treasure.objects.first()
-        distance = attempt.distance_to(treasure)
+        try:
+            attempt = serializer.save()
+            distance = attempt.verify()
+        except ValueError as error:
+            return Response(
+                status=500,
+                data={
+                    "status": "error",
+                    "distance": -1,
+                    "error": "No treasures were yet hidden",
+                },
+            )
 
         return Response(status=201, data={"status": "ok", "distance": distance})
 
