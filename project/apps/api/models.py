@@ -29,6 +29,9 @@ class Treasure(models.Model):
     longitude = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return "lat=%s, long=%s" % (self.latitude, self.longitude)
+
     def is_found(self, distance):
         """Checks is treasure within the min radius by comparing it with `distance`."""
         eps = sys.float_info.epsilon
@@ -57,6 +60,9 @@ class Attempt(models.Model):
     longitude = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "%s (lat=%s, long=%s)" % (self.email, self.latitude, self.longitude)
 
     @staticmethod
     @receiver(pre_save, sender="api.Attempt")

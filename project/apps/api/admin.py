@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from project.apps.api.models import Attempt, Treasure
+
+admin.site.register(Attempt)
+admin.site.register(Treasure)
