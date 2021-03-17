@@ -13,7 +13,8 @@ from project.apps.api.models import (
 )
 
 
-def test_attempt_verify(monkeypatch, db):
+@pytest.mark.django_db
+def test_attempt_verify(monkeypatch):
     send_email_mock = mock.Mock()
     monkeypatch.setattr(project.apps.api.tasks, "send_email", send_email_mock)
 
@@ -30,6 +31,33 @@ def test_attempt_verify(monkeypatch, db):
     assert Attempt.objects.first().user == user
     send_email_mock.delay.assert_called_once_with(
         (email,), subject=_TREASURE_FOUND_SUBJECT, body=_TREASURE_FOUND_BODY % 1
+    )
+
+
+@pytest.mark.django_db
+def test_attempt_current_number(monkeypatch):
+    send_email_mock = mock.Mock()
+    monkeypatch.setattr(project.apps.api.tasks, "send_email", send_email_mock)
+
+    email = "magauser@example.com"
+
+    User.objects.create(username="megauser", email=email)
+    Treasure.objects.create(latitude=10, longitude=10)
+    Attempt.objects.create(latitude=10, longitude=10, email=email, successful=True)
+    Attempt.objects.create(latitude=10, longitude=10, email=email, successful=True)
+    Attempt.objects.create(latitude=10, longitude=10, email=email, successful=True)
+
+    attempt = Attempt.objects.create(latitude=10, longitude=10, email=email)
+    attempt.verify()
+
+    Attempt.objects.create(latitude=10, longitude=10, email=email, successful=True)
+
+    expected_attempt_number = 4
+
+    send_email_mock.delay.assert_called_once_with(
+        (email,),
+        subject=_TREASURE_FOUND_SUBJECT,
+        body=_TREASURE_FOUND_BODY % expected_attempt_number,
     )
 
 
