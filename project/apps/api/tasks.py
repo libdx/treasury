@@ -9,11 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 @shared_task
-def log(string):
-    logger.info(string)
-
-
-@shared_task
 def send_email(recepients, subject, body):
     """Sends email to given recepients via AWS Simple Email Service."""
     logger.info(
