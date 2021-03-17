@@ -19,7 +19,7 @@ from project.apps.api.serializers import AttemptSerializer, UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """Represents 'users' endpoint."""
+    """Represents `/users/` endpoint."""
 
     permission_classes = [IsAuthenticatedOrReadOnly]
     queryset = User.objects.all()
@@ -27,6 +27,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class RegisterUserViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    """Represents `/auth/register/` endpoint."""
+
     permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -36,12 +38,18 @@ register_user = RegisterUserViewSet.as_view({"post": "create"})
 
 
 class TreasureHuntViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    """Represents the `tr'asures.json` endpoint."""
+
     permission_classes = [AllowAny]
     queryset = Attempt.objects.all()
     serializer_class = AttemptSerializer
 
     def create(self, request):
-        serializer = AttemptSerializer(data=request.data)
+        attempt_data = request.data.copy()
+        if "email" not in attempt_data and not request.user.is_anonymous:
+            attempt_data["email"] = request.user.email
+
+        serializer = AttemptSerializer(data=attempt_data)
         if not serializer.is_valid():
             return Response(
                 status=400,
@@ -76,6 +84,8 @@ class TreasureHuntViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
 
 
 class AttemptViewSet(viewsets.ReadOnlyModelViewSet):
+    """Represents `/attempts/` endpoint."""
+
     permission_classes = [IsAuthenticated]
     queryset = Attempt.objects.all()
     serializer_class = AttemptSerializer
