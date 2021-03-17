@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from rest_framework import routers, serializers, validators, viewsets
+from rest_framework import serializers, validators
 
 from project.apps.api.models import Attempt
 

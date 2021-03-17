@@ -1,20 +1,18 @@
 from django.contrib.auth.models import User
 from django.db import transaction
-from rest_framework import mixins, routers, serializers, viewsets
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework import mixins, viewsets
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
 )
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from project.apps.api.exceptions import (
     SuccessfulAttemptExistsError,
     TreasureNotDefinedError,
 )
-from project.apps.api.models import Attempt, Treasure
+from project.apps.api.models import Attempt
 from project.apps.api.serializers import AttemptSerializer, UserSerializer
 
 

@@ -2,7 +2,7 @@ from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from project.apps.api.routers import router as api_router
-from project.apps.api.views import AttemptViewSet, TreasureHuntViewSet, register_user
+from project.apps.api.views import register_user
 
 urlpatterns = [
     path("", include(api_router.urls)),

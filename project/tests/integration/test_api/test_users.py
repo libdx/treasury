@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_get_all_users(api_client, db):
     response = api_client.get("/api/users/")
     assert response.status_code == 200

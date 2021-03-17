@@ -3,7 +3,6 @@ from unittest import mock
 
 import pytest
 from django.conf import settings
-from haversine import Unit, haversine
 
 from project.apps.api.models import Treasure
 

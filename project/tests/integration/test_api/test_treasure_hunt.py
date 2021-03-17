@@ -1,7 +1,6 @@
 from unittest import mock
 
 import pytest
-from django.conf import settings
 from haversine import Unit, haversine
 
 import project.apps.api.tasks
