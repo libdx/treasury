@@ -9,15 +9,17 @@ from django.dispatch import receiver
 from haversine import Unit, haversine
 
 from project.apps.api import tasks
+from project.apps.api.exceptions import (
+    SuccessfulAttemptExistsError,
+    TreasureNotDefinedError,
+)
 
 _TREASURE_FOUND_SUBJECT = "Treasure found, congratulations!"
 
 _TREASURE_FOUND_BODY = (
-    "Hey, you’ve found a treasure, congratulations!"
+    "Hey, you’ve found a treasure, congratulations! "
     "You are %s treasure hunter who has found the treasure."
 )
-
-_TREASURE_NOT_DEFINED_ERROR = "Treasure not defined."
 
 
 class Treasure(models.Model):
@@ -65,29 +67,40 @@ class Attempt(models.Model):
             instance.user or User.objects.filter(email=instance.email).first()
         )
 
-    def _earlier_successful_attempts(self):
-        """Returns list of successful attempts.
+    def _other_earlier_successful_attempts(self):
+        """Returns `QuerySet` of successful attempts for all users.
 
-        Attemps are scoped by `self.treasure` and are in ascending order.
+        Attempts are scoped by `self.treasure` and are in ascending order.
         """
         return Attempt.objects.order_by("updated_at").filter(
             Q(updated_at__lt=self.updated_at) & Q(treasure=self.treasure)
         )
 
+    def _last_successful_attempt(self):
+        """Returns last successful attempt for attemp's user or None.
+
+        Attempt is scoped by `self.email` and `self.treasure`.
+        """
+        return Attempt.objects.filter(Q(successful=True) & Q(email=self.email))
+
     def verify(self):
         """Verifies attempt and if it is close enough to treasure
         sends congratulation email.
         """
-        self.treasure = Treasure.objects.latest("created_at")
         if not self.treasure:
-            raise ValueError(_TREASURE_NOT_DEFINED_ERROR)
+            raise TreasureNotDefinedError()
+
+        if self._last_successful_attempt():
+            raise SuccessfulAttemptExistsError()
 
         distance = self.distance_to(self.treasure)
         if self.treasure.is_found(distance):
             self.successful = True
             self.save()
 
-            current_attempt_number = self._earlier_successful_attempts().count() + 1
+            current_attempt_number = (
+                self._other_earlier_successful_attempts().count() + 1
+            )
 
             tasks.send_email.delay(
                 (self.email,),

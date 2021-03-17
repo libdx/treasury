@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db import transaction
 from rest_framework import mixins, routers, serializers, viewsets
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import (
@@ -9,6 +10,10 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from project.apps.api.exceptions import (
+    SuccessfulAttemptExistsError,
+    TreasureNotDefinedError,
+)
 from project.apps.api.models import Attempt, Treasure
 from project.apps.api.serializers import AttemptSerializer, UserSerializer
 
@@ -44,15 +49,26 @@ class TreasureHuntViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
             )
 
         try:
-            attempt = serializer.save()
-            distance = attempt.verify()
-        except ValueError as error:
+            with transaction.atomic():
+                attempt = serializer.save()
+                distance = attempt.verify()
+        except TreasureNotDefinedError:
             return Response(
                 status=500,
                 data={
                     "status": "error",
                     "distance": -1,
                     "error": "No treasures were yet hidden",
+                },
+            )
+        except SuccessfulAttemptExistsError:
+            return Response(
+                status=400,
+                data={
+                    "status": "error",
+                    "distance": -1,
+                    "error": "Treasure is already found by user under given email (%s)"
+                    % attempt.email,
                 },
             )
 

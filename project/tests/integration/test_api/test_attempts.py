@@ -43,9 +43,15 @@ def test_attempt_current_number(monkeypatch):
 
     User.objects.create(username="megauser", email=email)
     Treasure.objects.create(latitude=10, longitude=10)
-    Attempt.objects.create(latitude=10, longitude=10, email=email, successful=True)
-    Attempt.objects.create(latitude=10, longitude=10, email=email, successful=True)
-    Attempt.objects.create(latitude=10, longitude=10, email=email, successful=True)
+    Attempt.objects.create(
+        latitude=10, longitude=10, email="A" + email, successful=True
+    )
+    Attempt.objects.create(
+        latitude=10, longitude=10, email="B" + email, successful=True
+    )
+    Attempt.objects.create(
+        latitude=10, longitude=10, email="C" + email, successful=True
+    )
 
     attempt = Attempt.objects.create(latitude=10, longitude=10, email=email)
     attempt.verify()
