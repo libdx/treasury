@@ -33,7 +33,7 @@ class Treasure(models.Model):
         return (distance + eps) <= radius or (distance - eps) <= radius
 
     def found_times(self):
-        return 1
+        return 0
 
 
 class Attempt(models.Model):
@@ -60,6 +60,7 @@ class Attempt(models.Model):
     @receiver(pre_save, sender="api.Attempt")
     def _pre_save(sender, instance, *args, **kwargs):
         instance.treasure = Treasure.objects.latest("created_at")
+        instance.user = User.objects.filter(email=instance.email).first()
 
     def verify(self):
         """Verifies attempt and if it is close enough to treasure
@@ -71,10 +72,10 @@ class Attempt(models.Model):
 
         distance = self.distance_to(self.treasure)
         if self.treasure.is_found(distance):
-            tasks.send_email(
+            tasks.send_email.delay(
                 (self.email,),
                 subject=_TREASURE_FOUND_SUBJECT,
-                body=_TREASURE_FOUND_BODY % 1,
+                body=_TREASURE_FOUND_BODY % (self.treasure.found_times() + 1),
             )
         return distance
 

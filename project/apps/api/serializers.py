@@ -21,4 +21,8 @@ class AttemptSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Attempt
         fields = ["email", "latitude", "longitude", "created_at"]
-        extra_kwargs = {"latitude": {"required": True}, "longitude": {"required": True}}
+        extra_kwargs = {
+            "latitude": {"required": True},
+            "longitude": {"required": True},
+            "email": {"required": True},
+        }
