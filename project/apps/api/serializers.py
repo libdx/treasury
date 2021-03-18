@@ -16,6 +16,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ["url", "username", "email", "is_staff", "password"]
         extra_kwargs = {"password": {"write_only": True}}
 
+    def create(self, validated_data):
+        user = super().create(validated_data)
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
+
 
 class AttemptSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
