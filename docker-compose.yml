@@ -14,7 +14,8 @@ services:
     environment:
       DJANGO_DEVELOPMENT: "true"
       SECRET_KEY: ${SECRET_KEY}
-      DATABASE_URL: postgresql://postgres:postgres@web-db:5432/postgres
+      DATABASE_URL: "postgresql://postgres:postgres@web-db:5432/postgres"
+      BROKER_URL: "pyamqp://rabbitmq:rabbitmq@broker//"
     depends_on:
       - web-db
       - broker
@@ -29,6 +30,7 @@ services:
     environment:
       DJANGO_DEVELOPMENT: "true"
       DJANGO_SETTINGS_MODULE: "project.settings"
+      BROKER_URL: "pyamqp://rabbitmq:rabbitmq@broker//"
       SECRET_KEY: ${SECRET_KEY}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
