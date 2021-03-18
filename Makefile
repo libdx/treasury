@@ -10,6 +10,10 @@ clean:
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
+setup: up-build migrate
+	docker-compose exec $(APP) python manage.py createcachetable
+	docker-compose exec $(APP) python manage.py createsuperuser
+
 up:
 	docker-compose up --detach
 
