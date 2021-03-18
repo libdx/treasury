@@ -165,6 +165,6 @@ AWS_SES_EMAIL_SOURCE = os.getenv("AWS_SES_EMAIL_SOURCE")
 
 # Celery
 CELERY_RESULT_BACKEND = "rpc://"
-CELERY_BROKER_URL = os.getenv("BROKER_URL")
+CELERY_BROKER_URL = os.getenv("BROKER_URL") or os.getenv("CLOUDAMQP_URL")
 # To compline with free plan on Heroku:
 CELERY_BROKER_POOL_LIMIT = 1
