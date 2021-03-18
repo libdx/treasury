@@ -79,7 +79,9 @@ class Attempt(models.Model):
         Attempts are scoped by `self.treasure` and are in ascending order.
         """
         return Attempt.objects.order_by("updated_at").filter(
-            Q(updated_at__lt=self.updated_at) & Q(treasure=self.treasure)
+            Q(updated_at__lt=self.updated_at)
+            & Q(treasure=self.treasure)
+            & Q(successful=True)
         )
 
     def _last_successful_attempt(self):

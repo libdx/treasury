@@ -52,6 +52,9 @@ def test_attempt_current_number(monkeypatch):
     Attempt.objects.create(
         latitude=10, longitude=10, email="C" + email, successful=True
     )
+    Attempt.objects.create(
+        latitude=10, longitude=10, email="D" + email, successful=False
+    )
 
     attempt = Attempt.objects.create(latitude=10, longitude=10, email=email)
     attempt.verify()
