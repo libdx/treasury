@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -93,18 +95,13 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "web-db",
-        "PORT": 5432,
-    }
-}
+# Setup DATABASE according to DATABASE_URL environment variable
+DATABASES = {}
+DATABASES["default"] = dj_database_url.config(
+    default="postgresql://postgres:postgres@users-db:5432/postgres"
+)
 
-# Cache is mainly for throttle functionality. Datbase caching will do the job.
+# Cache is mainly for throttle functionality. Database caching will do the job.
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
@@ -165,3 +162,5 @@ AWS_SES_EMAIL_SOURCE = os.getenv("AWS_SES_EMAIL_SOURCE")
 # Celery
 CELERY_RESULT_BACKEND = "rpc://"
 CELERY_BROKER_URL = "pyamqp://rabbitmq:rabbitmq@broker//"
+# To compline with free plan on Heroku:
+CELERY_BROKER_POOL_LIMIT = 1

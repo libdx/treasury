@@ -14,6 +14,7 @@ services:
     environment:
       DJANGO_DEVELOPMENT: "true"
       SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: postgresql://postgres:postgres@web-db:5432/postgres
     depends_on:
       - web-db
       - broker
